@@ -13,7 +13,7 @@ import router from 'routes';
     await db.sync({});
     console.info('Database connected');
   } catch (err) {
-    console.err(err);
+    console.log(err);
   }
 })();
 
