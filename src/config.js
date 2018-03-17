@@ -1,6 +1,6 @@
 const env = process.env.NODE_ENV;
 const common = {
-  baseUrl : 'http://127.0.0.1:3000',
+  baseUrl: 'http://127.0.0.1:3000',
   mysql: {}
 };
 const config = {
