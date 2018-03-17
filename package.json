@@ -39,6 +39,7 @@
     "mysql": "^2.15.0",
     "mysql2": "^1.5.2",
     "nodemon": "^1.17.2",
+    "pm2": "^2.10.1",
     "sequelize": "^4.37.1",
     "swagger-jsdoc": "^1.8.2",
     "webpack": "^4.1.1"
