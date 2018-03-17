@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:babel": "babel-node src/main",
-    "start": "cross-env NODE_ENV=develop nodemon --watch src --exec npm run start:babel -L"
+    "start": "cross-env NODE_ENV=develop nodemon --watch src --exec npm run start:babel -L",
+    "build": "cross-env NODE_ENV=production babel src --out-dir dist"
   },
   "author": "yangliangfei",
   "devDependencies": {
