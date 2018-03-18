@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 
-import config from 'config';
 import db from 'db';
 
 const User = db.define('user', {
