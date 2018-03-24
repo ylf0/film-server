@@ -11,7 +11,7 @@ const config = {
       host: '127.0.0.1',
       database: 'film',
       user: 'root',
-      password: ''
+      password: 'zhinan'
     }
   },
   production: {
