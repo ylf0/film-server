@@ -9,7 +9,7 @@ import {
 const tag = tags(['User']);
 
 export default class UserRouter {
-  @request('get', '/api/user')
+  @request('get', '/user')
   @tag
   @summary('用户列表')
   static async getAll(ctx) {
