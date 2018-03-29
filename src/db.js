@@ -11,4 +11,4 @@ if (password) {
   mysqlUrl = `mysql://${user}@${host}/${database}`;
 }
 
-export default new Sequelize(mysqlUrl, { logging: false });
+export default new Sequelize(mysqlUrl, { logging: false, timezone: '+08:00' });
