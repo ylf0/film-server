@@ -12,6 +12,9 @@ const Review = db.define('review', {
   movieId: { type: Sequelize.INTEGER },
   title: { type: Sequelize.STRING },
   content: { type: Sequelize.STRING },
+  likeNum: { type: Sequelize.INTEGER, defaultValue: 0 },
+  commentNum: { type: Sequelize.INTEGER, defaultValue: 0 },
+  collectNum: { type: Sequelize.INTEGER, defaultValue: 0 },
   createdAt: {
     type: Sequelize.DATE,
     get() {
