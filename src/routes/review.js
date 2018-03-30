@@ -1,16 +1,22 @@
 import Review from 'models/review';
 import User from 'models/user';
 import Rank from 'models/rank';
+import Like from 'models/like';
 
 import {
   request,
   query,
   body,
+  path,
   summary,
   tags
 } from 'koa-swagger-decorator';
 
 const tag = tags(['Review']);
+
+const pathParameter = {
+  id: { type: 'number', required: true, description: '当前用户 id' }
+};
 
 const reviewSchema = {
   userId: { type: 'number', required: true },
@@ -20,15 +26,17 @@ const reviewSchema = {
 };
 
 export default class ReviewRouter {
-  @request('get', '/review')
+  @request('get', '/review/{id}')
   @query({
     page: { type: 'number', required: false, default: 1 },
     limit: { type: 'number', required: false, default: 10 }
     // type: { type: 'string', required: false }
   })
+  @path(pathParameter)
   @tag
   @summary('获取影评')
   static async getReview(ctx) {
+    const { id } = ctx.validatedParams;
     const { page, limit } = ctx.validatedQuery;
 
     const { count, rows: reviews } = await Review.findAndCountAll({
@@ -40,6 +48,16 @@ export default class ReviewRouter {
         { model: User },
         { model: Rank }
       ]
+    });
+
+    // 重置，防止取消赞后依然高亮；
+    reviews.forEach(review => { review.isLiked = false; });
+
+    // 找到当前用户赞过的影评并将标识符设为 true；
+    (await Like.findAll({ where: { senderId: id } })).forEach(like => {
+      reviews.forEach(review => {
+        if (review.id === like.reviewId) review.isLiked = true;
+      });
     });
 
     const pageCount = Math.ceil(count / limit);
