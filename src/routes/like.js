@@ -24,13 +24,13 @@ const pathParameter = {
 
 export default class LikeRouter {
   @request('post', '/like/{id}')
-  @tag
-  @summary('影评点赞')
-  @path(pathParameter)
   @body({
     senderId: likeSchema.senderId,
     receiverId: likeSchema.receiverId
   })
+  @path(pathParameter)
+  @tag
+  @summary('影评点赞')
 
   static async create(ctx) {
     const { id } = ctx.validatedParams;
