@@ -45,9 +45,7 @@ export default class LikeRouter {
     });
 
     if (hasLike) {
-      await Like.destroy({
-        where: { senderId, reviewId: id }
-      });
+      await Like.destroy({ where: { senderId, reviewId: id } });
     } else {
       like = await Like.create({ senderId, receiverId, reviewId: id });
     }
