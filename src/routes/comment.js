@@ -1,9 +1,10 @@
 import Comment from 'models/comment';
 import Review from 'models/review';
+import User from 'models/user';
 
 import {
   request,
-  // query,
+  query,
   body,
   path,
   summary,
@@ -24,6 +25,30 @@ const pathParameter = {
 };
 
 export default class CommentRouter {
+  @request('get', '/comment/{id}')
+  @query({
+    page: { type: 'number', required: false, default: 1 },
+    limit: { type: 'number', required: false, default: 10 }
+  })
+  @path(pathParameter)
+  @tag
+  @summary('评论列表')
+  static async getComment(ctx) {
+    const { id } = ctx.validatedParams;
+    const { page, limit } = ctx.validatedQuery;
+
+    const { count, rows: comments } = await Comment.findAndCountAll({
+      where: { reviewId: id },
+      include: [{ all: true }],
+      page,
+      limit,
+      offset: (page - 1) * limit,
+      order: [['updatedAt', 'DESC']]
+    });
+
+    ctx.body = { count, comments };
+  }
+
   @request('post', '/comment/{id}')
   @body({
     senderId: commentSchema.senderId,

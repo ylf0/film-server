@@ -26,8 +26,9 @@ const Comment = db.define('comment', {
   }
 });
 
-Comment.belongsTo(User, { foreignKey: 'senderId' });
+
 Comment.belongsTo(User, { foreignKey: 'receiverId' });
+Comment.belongsTo(User, { foreignKey: 'senderId' });
 Comment.belongsTo(Review, { foreignKey: 'reviewId' });
 
 export default Comment;
