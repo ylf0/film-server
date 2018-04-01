@@ -18,8 +18,12 @@ const likeSchema = {
   reviewId: { type: 'number', required: true }
 };
 
-const pathParameter = {
+const reviewIdParameter = {
   id: { type: 'number', required: true, description: '影评 id' }
+};
+
+const userIdParameter = {
+  userId: { type: 'number', required: true, description: '当前用户 id' }
 };
 
 export default class LikeRouter {
@@ -28,7 +32,7 @@ export default class LikeRouter {
     senderId: likeSchema.senderId,
     receiverId: likeSchema.receiverId
   })
-  @path(pathParameter)
+  @path(reviewIdParameter)
   @tag
   @summary('影评点赞')
 
@@ -56,5 +60,32 @@ export default class LikeRouter {
     );
 
     ctx.body = { like };
+  }
+
+  @request('GET', '/like/{userId}/all')
+  @path(userIdParameter)
+  @tag
+  @summary('获取当前用户赞过的影评')
+  static async getCurrentLike(ctx) {
+    const { userId } = ctx.validatedParams;
+
+    const likes = await Like.findAll({
+      where: { senderId: userId },
+      include: [{ model: Review }]
+    });
+
+    ctx.body = { likes };
+  }
+
+  @request('GET', '/like/{userId}/count')
+  @path(userIdParameter)
+  @tag
+  @summary('获取当前用户赞过的总数')
+  static async getCurrentLikeCount(ctx) {
+    const { userId } = ctx.validatedParams;
+
+    const count = await Like.count({ where: { senderId: userId } });
+
+    ctx.body = { count };
   }
 }
