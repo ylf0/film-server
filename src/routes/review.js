@@ -82,4 +82,29 @@ export default class ReviewRouter {
     ctx.body = { review };
   }
 
+  @request('get', '/review/{id}/all')
+  @path(pathParameter)
+  @tag
+  @summary('获取当前用户的影评')
+  static async gteCurrentReview(ctx) {
+    const { id } = ctx.validatedParams;
+
+    const reviews = await Review.findAll(
+      { where: { userId: id } }
+    );
+
+    ctx.body = { reviews };
+  }
+
+  @request('GET', '/review/{id}/count')
+  @path(pathParameter)
+  @tag
+  @summary('获取当前用户赞过的总数')
+  static async getCurrentReviewCount(ctx) {
+    const { id } = ctx.validatedParams;
+
+    const count = await Review.count({ where: { userId: id } });
+
+    ctx.body = { count };
+  }
 }
