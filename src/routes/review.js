@@ -15,7 +15,8 @@ import {
 const tag = tags(['Review']);
 
 const pathParameter = {
-  id: { type: 'number', required: true, description: '当前用户 id' }
+  id: { type: 'number', required: false, description: '当前用户 id' },
+  movieId: { type: 'number', required: false, description: '当前电影 id' }
 };
 
 const reviewSchema = {
@@ -32,7 +33,7 @@ export default class ReviewRouter {
     limit: { type: 'number', required: false, default: 10 },
     type: { type: 'string', required: false }
   })
-  @path(pathParameter)
+  @path({ id: pathParameter.id })
   @tag
   @summary('获取影评')
   static async getReview(ctx) {
@@ -83,7 +84,7 @@ export default class ReviewRouter {
   }
 
   @request('get', '/review/{id}/all')
-  @path(pathParameter)
+  @path({ id: pathParameter.id })
   @tag
   @summary('获取当前用户的影评')
   static async gteCurrentReview(ctx) {
@@ -96,15 +97,39 @@ export default class ReviewRouter {
     ctx.body = { reviews };
   }
 
-  @request('GET', '/review/{id}/count')
-  @path(pathParameter)
+  @request('get', '/review/{id}/count')
+  @path({ id: pathParameter.id })
   @tag
-  @summary('获取当前用户赞过的总数')
+  @summary('获取当前用户影评总数')
   static async getCurrentReviewCount(ctx) {
     const { id } = ctx.validatedParams;
 
     const count = await Review.count({ where: { userId: id } });
 
     ctx.body = { count };
+  }
+
+  @request('get', '/review/movie/{movieId}')
+  @query({
+    page: { type: 'number', required: false, default: 1 },
+    limit: { type: 'number', required: false, default: 10 }
+  })
+  @path({ movieId: pathParameter.movieId })
+  @tag
+  @summary('获取指定电影下的影评')
+  static async getMovieReview(ctx) {
+    const { movieId } = ctx.validatedParams;
+    const { page, limit } = ctx.validatedQuery;
+
+    const { count, rows: reviews } = await Review.findAndCountAll({
+      where: { movieId },
+      page,
+      limit,
+      offest: (page - 1) * limit,
+      order: [['updatedAt', 'DESC']],
+      include: [{ model: User }]
+    });
+
+    ctx.body = { count, reviews };
   }
 }
