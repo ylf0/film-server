@@ -29,15 +29,15 @@ export default class ReviewRouter {
   @request('get', '/review/{id}')
   @query({
     page: { type: 'number', required: false, default: 1 },
-    limit: { type: 'number', required: false, default: 10 }
-    // type: { type: 'string', required: false }
+    limit: { type: 'number', required: false, default: 10 },
+    type: { type: 'string', required: false }
   })
   @path(pathParameter)
   @tag
   @summary('获取影评')
   static async getReview(ctx) {
     const { id } = ctx.validatedParams;
-    const { page, limit } = ctx.validatedQuery;
+    const { page, limit, type } = ctx.validatedQuery;
 
     const { count, rows: reviews } = await Review.findAndCountAll({
       page,
@@ -46,7 +46,7 @@ export default class ReviewRouter {
       order: [['createdAt', 'DESC']],
       include: [
         { model: User },
-        { model: Rank }
+        { model: Rank, where: type ? { movie_type: { $like: `%${type}%` } } : {} }
       ]
     });
 
