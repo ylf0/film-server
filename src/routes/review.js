@@ -47,7 +47,7 @@ export default class ReviewRouter {
       order: [['createdAt', 'DESC']],
       include: [
         { model: User },
-        { model: Rank, where: type ? { movie_type: { $like: `%${type}%` } } : {} }
+        { model: Rank, where: type ? { type: { $like: `%${type}%` } } : {} }
       ]
     });
 
