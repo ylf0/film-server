@@ -43,7 +43,7 @@ export default class ReviewRouter {
     const { count, rows: reviews } = await Review.findAndCountAll({
       page,
       limit,
-      offest: (page - 1) * limit,
+      offset: (page - 1) * limit,
       order: [['createdAt', 'DESC']],
       include: [
         { model: User },
@@ -63,7 +63,7 @@ export default class ReviewRouter {
 
     const pageCount = Math.ceil(count / limit);
 
-    ctx.body = { count, pageCount, reviews };
+    ctx.body = { pageCount, reviews };
   }
 
   @request('post', '/review')
