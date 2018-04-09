@@ -31,7 +31,7 @@ export default class RankRouter {
       time = '';
     } else if (time === '1970') {
       time = [1900, 1969];
-    } else {
+    } else if (time) {
       time = time.split(',');
     }
 
