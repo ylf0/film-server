@@ -109,16 +109,16 @@ export default class ReviewRouter {
     ctx.body = { count };
   }
 
-  @request('get', '/review/movie/{movieId}')
+  @request('get', '/review/{id}/movie/{movieId}')
   @query({
     page: { type: 'number', required: false, default: 1 },
     limit: { type: 'number', required: false, default: 10 }
   })
-  @path({ movieId: pathParameter.movieId })
+  @path({ id: pathParameter.id, movieId: pathParameter.movieId })
   @tag
   @summary('获取指定电影下的影评')
   static async getMovieReview(ctx) {
-    const { movieId } = ctx.validatedParams;
+    const { id, movieId } = ctx.validatedParams;
     const { page, limit } = ctx.validatedQuery;
 
     const { count, rows: reviews } = await Review.findAndCountAll({
@@ -126,8 +126,18 @@ export default class ReviewRouter {
       page,
       limit,
       offest: (page - 1) * limit,
-      order: [['updatedAt', 'DESC']],
+      order: [['createdAt', 'DESC']],
       include: [{ model: User }]
+    });
+
+    // 重置，防止取消赞后依然高亮；
+    reviews.forEach(review => { review.isLiked = false; });
+
+    // 找到当前用户赞过的影评并将标识符设为 true；
+    (await Like.findAll({ where: { senderId: id } })).forEach(like => {
+      reviews.forEach(review => {
+        if (review.id === like.reviewId) review.isLiked = true;
+      });
     });
 
     ctx.body = { count, reviews };

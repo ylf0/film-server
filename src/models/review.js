@@ -16,6 +16,7 @@ const Review = db.define('review', {
   commentNum: { type: Sequelize.INTEGER, defaultValue: 0 },
   collectNum: { type: Sequelize.INTEGER, defaultValue: 0 },
   isLiked: { type: Sequelize.BOOLEAN, defaultValue: false },
+  showComment: { type: Sequelize.BOOLEAN, defaultValue: false },
   createdAt: {
     type: Sequelize.DATE,
     get() {
