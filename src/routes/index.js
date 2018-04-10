@@ -5,6 +5,8 @@ import RankRouter from 'routes/rank';
 import ReviewRouter from 'routes/review';
 import LikeRouter from 'routes/like';
 import CommentRouter from 'routes/comment';
+import WordsRouter from 'routes/words';
+import WordsLikeRouter from 'routes/wordsLike';
 
 import { wrapper } from 'koa-swagger-decorator';
 
@@ -18,5 +20,7 @@ router.map(RankRouter);
 router.map(ReviewRouter);
 router.map(LikeRouter);
 router.map(CommentRouter);
+router.map(WordsRouter);
+router.map(WordsLikeRouter);
 
 export default router;
