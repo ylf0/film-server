@@ -18,52 +18,49 @@ const likeSchema = {
   reviewId: { type: 'number', required: true }
 };
 
-const reviewIdParameter = {
-  id: { type: 'number', required: true, description: '影评 id' }
-};
-
-const userIdParameter = {
-  userId: { type: 'number', required: true, description: '当前用户 id' }
+const pathParameter = {
+  userId: { type: 'number', required: true, description: '当前用户 id' },
+  reviewId: { type: 'number', required: true, description: '影评 id' }
 };
 
 export default class LikeRouter {
-  @request('post', '/like/{id}')
+  @request('post', '/like/{reviewId}')
   @body({
     senderId: likeSchema.senderId,
     receiverId: likeSchema.receiverId
   })
-  @path(reviewIdParameter)
+  @path({ reviewId: pathParameter.reviewId })
   @tag
   @summary('影评点赞')
 
   static async create(ctx) {
-    const { id } = ctx.validatedParams;
+    const { reviewId } = ctx.validatedParams;
     const { senderId, receiverId } = ctx.validatedBody;
     const { likeNum } = await Review.findOne({
-      where: { id }
+      where: { id: reviewId }
     });
     let like = null;
 
     const hasLike = await Like.findOne({
-      where: { senderId, reviewId: id }
+      where: { senderId, reviewId }
     });
 
     if (hasLike) {
-      await Like.destroy({ where: { senderId, reviewId: id } });
+      await Like.destroy({ where: { senderId, reviewId } });
     } else {
-      like = await Like.create({ senderId, receiverId, reviewId: id });
+      like = await Like.create({ senderId, receiverId, reviewId });
     }
 
     await Review.update(
       { likeNum: hasLike ? likeNum - 1 : likeNum + 1 },
-      { where: { id } }
+      { where: { id: reviewId } }
     );
 
     ctx.body = { like };
   }
 
-  @request('GET', '/like/{userId}/all')
-  @path(userIdParameter)
+  @request('get', '/like/{userId}/all')
+  @path({ userId: pathParameter.userId })
   @tag
   @summary('获取当前用户赞过的影评')
   static async getCurrentLike(ctx) {
@@ -77,8 +74,8 @@ export default class LikeRouter {
     ctx.body = { likes };
   }
 
-  @request('GET', '/like/{userId}/count')
-  @path(userIdParameter)
+  @request('get', '/like/{userId}/count')
+  @path({ userId: pathParameter.userId })
   @tag
   @summary('获取当前用户赞过的总数')
   static async getCurrentLikeCount(ctx) {
