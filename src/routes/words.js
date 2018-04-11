@@ -1,6 +1,6 @@
 import Words from 'models/words';
 import User from 'models/user';
-import Like from 'models/like';
+import WordsLike from 'models/wordsLike';
 
 import {
   request,
@@ -46,7 +46,7 @@ export default class WordsRouter {
 
     words.forEach(word => { word.isLiked = false; });
 
-    (await Like.findAll({ where: { senderId: id, wordsId: { $not: 0 } } })).forEach(like => {
+    (await WordsLike.findAll({ where: { senderId: id } })).forEach(like => {
       words.forEach(word => {
         if (word.id === like.wordsId) word.isLiked = true;
       });
@@ -71,5 +71,31 @@ export default class WordsRouter {
     });
 
     ctx.body = { words };
+  }
+
+  @request('get', '/words/{id}/all')
+  @path(pathParameter)
+  @tag
+  @summary('获取当前用户的台词')
+  static async getCurrentWords(ctx) {
+    const { id } = ctx.validatedParams;
+
+    const words = await Words.findAll(
+      { where: { userId: id } }
+    );
+
+    ctx.body = { words };
+  }
+
+  @request('get', '/words/{id}/count')
+  @path(pathParameter)
+  @tag
+  @summary('获取当前用户台词总数')
+  static async getCurrentWordsCount(ctx) {
+    const { id } = ctx.validatedParams;
+
+    const count = await Words.count({ where: { userId: id } });
+
+    ctx.body = { count };
   }
 }
