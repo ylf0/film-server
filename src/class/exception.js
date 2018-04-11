@@ -1,3 +1,13 @@
+class AuthError extends Error {
+  /**
+   * Constructor
+   */
+  constructor() {
+    super('无操作权限');
+    this.status = 401;
+  }
+}
+
 class ForbiddenError extends Error {
   /**
    * Constructor
@@ -20,4 +30,4 @@ class NotFoundError extends Error {
   }
 }
 
-export default { ForbiddenError, NotFoundError };
+export default { AuthError, ForbiddenError, NotFoundError };

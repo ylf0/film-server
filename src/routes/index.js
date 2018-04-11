@@ -10,11 +10,14 @@ import WordsLikeRouter from 'routes/wordsLike';
 
 import { wrapper } from 'koa-swagger-decorator';
 
+import auth from 'middleware/auth';
+
 const router = new Router();
 wrapper(router);
 
 router.swagger({ title: 'Film', description: 'Film API Doc', version: '0.0.1' });
 
+router.use(auth({ excludes: ['/user/login'] }));
 router.map(UserRouter);
 router.map(RankRouter);
 router.map(ReviewRouter);

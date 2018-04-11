@@ -7,6 +7,8 @@ import exception from 'class/exception';
 
 import config from 'config';
 
+import { calculateToken } from 'server/user';
+
 import {
   request,
   body,
@@ -62,7 +64,8 @@ export default class UserRouter {
 
     user = await User.create({
       name,
-      passwordHash: sha1(password)
+      passwordHash: sha1(password),
+      token: calculateToken()
     });
 
     ctx.body = { user };
@@ -84,6 +87,8 @@ export default class UserRouter {
     } else if (user.passwordHash !== sha1(password)) {
       throw new exception.ForbiddenError('密码错误');
     }
+
+    user.token = calculateToken();
 
     await user.save();
 
