@@ -2,6 +2,7 @@ import Review from 'models/review';
 import User from 'models/user';
 import Rank from 'models/rank';
 import Like from 'models/like';
+import ReviewCollect from 'models/reviewCollect';
 
 import {
   request,
@@ -51,13 +52,22 @@ export default class ReviewRouter {
       ]
     });
 
-    // 重置，防止取消赞后依然高亮；
-    reviews.forEach(review => { review.isLiked = false; });
+    // 重置，防止取消赞和收藏后依然高亮；
+    reviews.forEach(review => {
+      review.isLiked = false;
+      review.isCollected = false;
+    });
 
-    // 找到当前用户赞过的影评并将标识符设为 true；
+    // 找到当前用户赞和收藏过的影评并将标识符设为 true；
     (await Like.findAll({ where: { senderId: id } })).forEach(like => {
       reviews.forEach(review => {
         if (review.id === like.reviewId) review.isLiked = true;
+      });
+    });
+
+    (await ReviewCollect.findAll({ where: { senderId: id } })).forEach(collect => {
+      reviews.forEach(review => {
+        if (review.id === collect.reviewId) review.isCollected = true;
       });
     });
 
@@ -130,13 +140,22 @@ export default class ReviewRouter {
       include: [{ model: User }]
     });
 
-    // 重置，防止取消赞后依然高亮；
-    reviews.forEach(review => { review.isLiked = false; });
+    // 重置，防止取消赞和收藏后依然高亮；
+    reviews.forEach(review => {
+      review.isLiked = false;
+      review.isCollected = false;
+    });
 
-    // 找到当前用户赞过的影评并将标识符设为 true；
+    // 找到当前用户赞和收藏过的影评并将标识符设为 true；
     (await Like.findAll({ where: { senderId: id } })).forEach(like => {
       reviews.forEach(review => {
         if (review.id === like.reviewId) review.isLiked = true;
+      });
+    });
+
+    (await ReviewCollect.findAll({ where: { senderId: id } })).forEach(collect => {
+      reviews.forEach(review => {
+        if (review.id === collect.reviewId) review.isCollected = true;
       });
     });
 

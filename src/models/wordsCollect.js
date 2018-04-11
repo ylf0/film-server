@@ -2,18 +2,15 @@ import Sequelize from 'sequelize';
 import moment from 'moment';
 
 import User from 'models/user';
+import Words from 'models/words';
 
 import db from 'db';
 
-const Words = db.define('words', {
+const WordsCollect = db.define('words_collect', {
   id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-  userId: { type: Sequelize.INTEGER },
-  title: { type: Sequelize.STRING },
-  content: { type: Sequelize.TEXT },
-  likeNum: { type: Sequelize.INTEGER, defaultValue: 0 },
-  collectNum: { type: Sequelize.INTEGER, defaultValue: 0 },
-  isLiked: { type: Sequelize.BOOLEAN, defaultValue: false },
-  isCollected: { type: Sequelize.BOOLEAN, defaultValue: false },
+  senderId: { type: Sequelize.INTEGER, allowNull: false },
+  receiverId: { type: Sequelize.INTEGER, allowNull: false },
+  wordsId: { type: Sequelize.INTEGER, allowNull: false },
   createdAt: {
     type: Sequelize.DATE,
     get() {
@@ -28,6 +25,8 @@ const Words = db.define('words', {
   }
 });
 
-Words.belongsTo(User, { foreignKey: 'userId' });
+WordsCollect.belongsTo(User, { foreignKey: 'senderId' });
+WordsCollect.belongsTo(User, { foreignKey: 'receiverId' });
+WordsCollect.belongsTo(Words, { foreignKey: 'wordsId' });
 
-export default Words;
+export default WordsCollect;

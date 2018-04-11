@@ -1,5 +1,7 @@
 import Like from 'models/like';
 import Review from 'models/review';
+import WordsLike from 'models/wordsLike';
+import Words from 'models/words';
 
 import {
   request,
@@ -62,16 +64,21 @@ export default class LikeRouter {
   @request('get', '/like/{userId}/all')
   @path({ userId: pathParameter.userId })
   @tag
-  @summary('获取当前用户赞过的影评')
+  @summary('获取当前用户赞过的影评和台词')
   static async getCurrentLike(ctx) {
     const { userId } = ctx.validatedParams;
 
-    const likes = await Like.findAll({
+    const reviewLikes = await Like.findAll({
       where: { senderId: userId },
       include: [{ model: Review }]
     });
 
-    ctx.body = { likes };
+    const wordsLikes = await WordsLike.findAll({
+      where: { senderId: userId },
+      include: [{ model: Words }]
+    });
+
+    ctx.body = { reviewLikes, wordsLikes };
   }
 
   @request('get', '/like/{userId}/count')
@@ -81,8 +88,9 @@ export default class LikeRouter {
   static async getCurrentLikeCount(ctx) {
     const { userId } = ctx.validatedParams;
 
-    const count = await Like.count({ where: { senderId: userId } });
+    const reviewCount = await Like.count({ where: { senderId: userId } });
+    const wordsCount = await WordsLike.count({ where: { senderId: userId } });
 
-    ctx.body = { count };
+    ctx.body = { count: reviewCount + wordsCount };
   }
 }

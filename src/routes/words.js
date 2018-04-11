@@ -1,6 +1,7 @@
 import Words from 'models/words';
 import User from 'models/user';
 import WordsLike from 'models/wordsLike';
+import WordsCollect from 'models/wordsCollect';
 
 import {
   request,
@@ -45,10 +46,16 @@ export default class WordsRouter {
     });
 
     words.forEach(word => { word.isLiked = false; });
+    words.forEach(word => { word.isCollected = false; });
 
     (await WordsLike.findAll({ where: { senderId: id } })).forEach(like => {
       words.forEach(word => {
         if (word.id === like.wordsId) word.isLiked = true;
+      });
+    });
+    (await WordsCollect.findAll({ where: { senderId: id } })).forEach(collect => {
+      words.forEach(word => {
+        if (word.id === collect.wordsId) word.isCollected = true;
       });
     });
 

@@ -6,7 +6,7 @@ import Words from 'models/words';
 
 import db from 'db';
 
-const WordsLike = db.define('wordsLike', {
+const WordsLike = db.define('words_like', {
   id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
   senderId: { type: Sequelize.INTEGER, allowNull: false },
   receiverId: { type: Sequelize.INTEGER, allowNull: false },
