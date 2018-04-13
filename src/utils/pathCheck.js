@@ -4,6 +4,9 @@
  * @param {object} option { includes: [], excludes: [] }
  */
 export default function (path, option = {}) {
+  if (path === '/user/register') {
+    return false;
+  }
   if (option.includes instanceof Array) {
     let hit = false;
     option.includes.forEach(urlPattern => {
