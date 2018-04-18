@@ -14,7 +14,7 @@ class ForbiddenError extends Error {
    * @param { string } detail the detail of the forbidden reason.
    */
   constructor(detail = 'some unknown reason') {
-    super(`你的操作被拒绝了，因为${detail}`);
+    super(detail);
     this.status = 403;
   }
 }
