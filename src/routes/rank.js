@@ -3,6 +3,7 @@ import Rank from 'models/rank';
 import {
   request,
   query,
+  body,
   summary,
   tags
 } from 'koa-swagger-decorator';
@@ -53,6 +54,27 @@ export default class RankRouter {
       });
       ctx.body = { count, ranks };
     }
+  }
+
+  @request('post', '/rank/add')
+  @body({
+    title: { type: 'string', require: true, description: '电影名' },
+    director: { type: 'string', require: true, description: '导演' },
+    player: { type: 'string', require: true, description: '主演' },
+    type: { type: 'string', require: true, description: '类型' },
+  })
+  @tag
+  @summary('添加电影')
+  static async addRank(ctx) {
+    const { title, director, player, type } = ctx.validatedBody;
+
+    const rank = await Rank.create({
+      title,
+      info: `导演: ${director}  主演: ${player}`,
+      type
+    });
+
+    ctx.body = { id: rank.id };
   }
 
 }
