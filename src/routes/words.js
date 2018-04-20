@@ -28,16 +28,18 @@ export default class WordsRouter {
   @request('get', '/words/{id}')
   @query({
     page: { type: 'number', required: false, default: 1 },
-    limit: { type: 'number', required: false, default: 10 }
+    limit: { type: 'number', required: false, default: 10 },
+    searchWord: { type: 'string', required: false }
   })
   @path(pathParameter)
   @tag
   @summary('获取台词')
   static async getWords(ctx) {
     const { id } = ctx.validatedParams;
-    const { page, limit } = ctx.validatedQuery;
+    const { page, limit, searchWord } = ctx.validatedQuery;
 
     const { count, rows: words } = await Words.findAndCountAll({
+      where: searchWord ? { $or: [{ title: { $like: `%${searchWord}%` } }, { content: { $like: `%${searchWord}%` } }] } : {},
       page,
       limit,
       offest: (page - 1) * limit,

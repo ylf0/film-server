@@ -32,6 +32,7 @@ export default class ReviewRouter {
   @query({
     page: { type: 'number', required: false, default: 1 },
     limit: { type: 'number', required: false, default: 10 },
+    searchWord: { type: 'string', required: false },
     type: { type: 'string', required: false }
   })
   @path({ id: pathParameter.id })
@@ -39,9 +40,10 @@ export default class ReviewRouter {
   @summary('获取影评')
   static async getReview(ctx) {
     const { id } = ctx.validatedParams;
-    const { page, limit, type } = ctx.validatedQuery;
+    const { page, limit, searchWord, type } = ctx.validatedQuery;
 
     const { count, rows: reviews } = await Review.findAndCountAll({
+      where: searchWord ? { title: { $like: `%${searchWord}%` } } : {},
       page,
       limit,
       offset: (page - 1) * limit,
