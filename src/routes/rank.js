@@ -25,7 +25,6 @@ export default class RankRouter {
   static async getRank(ctx) {
     const { page, limit, searchWord } = ctx.validatedQuery;
     let { type, area, time } = ctx.validatedQuery;
-    // console.log(`${type}${area}${time}`);
     if (type === '全部') type = '';
     if (area === '全部') area = '';
     if (time === '全部') {
@@ -49,8 +48,7 @@ export default class RankRouter {
                     : { type: { $like: `%${type}%` }, area: { $like: `%${area}%` } },
         page,
         limit,
-        offset: (page - 1) * limit,
-        order: [['order', 'ASC']]
+        offset: (page - 1) * limit
       });
       ctx.body = { count, ranks };
     }
