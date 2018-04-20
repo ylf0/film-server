@@ -27,7 +27,8 @@ const userSchema = {
 };
 
 const pathParameter = {
-  id: { type: 'number', required: true, description: '当前用户 id' }
+  id: { type: 'number', required: true, description: '当前用户 id' },
+  avatar: { type: 'string', required: true, description: '是否是头像文件' }
 };
 
 const userStorage = multer.diskStorage({
@@ -95,7 +96,7 @@ export default class UserRouter {
     ctx.body = { user };
   }
 
-  @request('post', '/user/{id}/avatar')
+  @request('post', '/user/{id}/{avatar}')
   @path(pathParameter)
   @formData({
     file: { type: 'file', required: true, description: '头像文件' }
@@ -104,15 +105,21 @@ export default class UserRouter {
   @tag
   @summary('用户头像上传')
   static async uploadAvatar(ctx) {
-    const { id } = ctx.validatedParams;
+    const { id, avatar } = ctx.validatedParams;
     const user = await User.findById(id);
     if (!user) throw new exception.NotFoundError(`user id ${id}`);
 
     const { file } = ctx.req;
 
-    await user.update({
-      avatar: `${config.baseUrl}/images/${file.filename}`
-    });
+    if (avatar === 'avatar') {
+      await user.update({
+        avatar: `${config.baseUrl}/images/${file.filename}`
+      });
+    } else {
+      await user.update({
+        cover: `${config.baseUrl}/images/${file.filename}`
+      });
+    }
 
     ctx.body = { msg: '上传成功', user: { user } };
   }

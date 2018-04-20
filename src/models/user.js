@@ -7,6 +7,7 @@ const User = db.define('user', {
   name: { type: Sequelize.STRING, unique: true, allowNull: false },
   passwordHash: { type: Sequelize.STRING },
   avatar: { type: Sequelize.STRING, defaultValue: 'static/images/avatar.jpg' },
+  cover: { type: Sequelize.STRING },
   token: { type: Sequelize.STRING }
 });
 
