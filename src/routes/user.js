@@ -11,6 +11,7 @@ import { calculateToken } from 'server/user';
 
 import {
   request,
+  query,
   body,
   path,
   middlewares,
@@ -45,11 +46,21 @@ const userUpload = multer({ storage: userStorage });
 
 export default class UserRouter {
   @request('get', '/user')
+  @query({
+    page: { type: 'number', required: false, defaultValue: 1 },
+    limit: { type: 'number', required: false, defaultValue: 10 }
+  })
   @tag
   @summary('用户列表')
   static async getAll(ctx) {
-    const allUser = await User.findAll();
-    ctx.body = { allUser };
+    const { page, limit } = ctx.validatedQuery;
+    const { rows: allUser, count } = await User.findAndCountAll({
+      page,
+      limit,
+      offest: (page - 1) * limit
+    });
+    allUser.forEach(user => { user.selected = false; });
+    ctx.body = { count, allUser };
   }
 
   @request('post', '/user/register')
@@ -122,5 +133,16 @@ export default class UserRouter {
     }
 
     ctx.body = { msg: '上传成功', user: { user } };
+  }
+
+  @request('delete', '/delete/{id}')
+  @path({ id: pathParameter.id })
+  @tag
+  @summary('删除用户')
+  static async deleteUser(ctx) {
+    const { id } = ctx.validatedParams;
+    await User.destroy({ where: { id } });
+
+    ctx.body = { msg: '删除成功' };
   }
 }
