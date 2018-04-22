@@ -1,9 +1,11 @@
 import Rank from 'models/rank';
+import User from 'models/user';
 
 import {
   request,
   query,
   body,
+  path,
   summary,
   tags
 } from 'koa-swagger-decorator';
@@ -11,7 +13,7 @@ import {
 const tag = tags(['Rank']);
 
 export default class RankRouter {
-  @request('post', '/rank')
+  @request('get', '/rank')
   @query({
     page: { type: 'number', require: false, default: 1, description: '页码' },
     limit: { type: 'number', require: false, default: 10, description: '每页数量' },
@@ -74,5 +76,4 @@ export default class RankRouter {
 
     ctx.body = { id: rank.id };
   }
-
 }
