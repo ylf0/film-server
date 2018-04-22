@@ -11,6 +11,7 @@ const User = db.define('user', {
   cover: { type: Sequelize.STRING },
   token: { type: Sequelize.STRING },
   selected: { type: Sequelize.BOOLEAN, defaultValue: false },
+  favor: { type: Sequelize.STRING },
   createdAt: {
     type: Sequelize.DATE,
     get() {

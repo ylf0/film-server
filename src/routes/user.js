@@ -29,7 +29,7 @@ const userSchema = {
 
 const pathParameter = {
   id: { type: 'number', required: true, description: '当前用户 id' },
-  avatar: { type: 'string', required: true, description: '是否是头像文件' }
+  avatar: { type: 'string', required: true, description: '是否为头像文件' }
 };
 
 const userStorage = multer.diskStorage({
@@ -144,5 +144,37 @@ export default class UserRouter {
     await User.destroy({ where: { id } });
 
     ctx.body = { msg: '删除成功' };
+  }
+
+  @request('post', '/user/favor')
+  @body({
+    id: { type: 'number', required: true },
+    type: { type: 'string', required: true }
+  })
+  @tag
+  @summary('收集用户喜好')
+  static async getFavor(ctx) {
+    const { id, type } = ctx.validatedBody;
+    const types = type.split(' ');
+
+    const user = await User.findById(id);
+
+    if (!user.favor) {
+      await User.update(
+        { favor: type },
+        { where: { id } }
+      );
+    } else {
+      types.forEach(async type => {
+        if (user.favor.indexOf(type) === -1) {
+          await User.update(
+            { favor: `${user.favor} ${type}` },
+            { where: { id } }
+          );
+        }
+      });
+    }
+
+    ctx.body = { msg: 'success' };
   }
 }
