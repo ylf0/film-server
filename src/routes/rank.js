@@ -1,5 +1,6 @@
 import Rank from 'models/rank';
 import User from 'models/user';
+import Review from 'models/review';
 
 import {
   request,
@@ -75,5 +76,44 @@ export default class RankRouter {
     });
 
     ctx.body = { id: rank.id };
+  }
+
+  @request('get', '/rank/recommend/{id}')
+  @path({ id: { type: 'number', require: true } })
+  @tag
+  @summary('推荐电影')
+  static async recommend(ctx) {
+    const { id } = ctx.validatedParams;
+    const user = await User.findById(id);
+    const ids = new Set();
+    const userdIds = new Set();
+    let list = [];
+    let recommends = [];
+
+    if (user.favor) {
+      list = user.favor.split(' ');
+      for (let i = 0; i < list.length; i += 1) {
+        const rank = await Rank.findOne({
+          where: { type: { $like: `%${list[i]}%` } }
+        });
+        ids.add(rank.id);
+      }
+      (await Review.findAll({ where: { userId: id } })).forEach(review => { userdIds.add(review.movieId); });
+
+      (Array.from(userdIds)).forEach(used => {
+        if (ids.has(used)) ids.delete(used);
+      });
+
+      recommends = await Rank.findAll({
+        where: { id: Array.from(ids) }
+      });
+    } else {
+      const { rows: ranks } = await Rank.findAndCount({
+        limit: 6
+      });
+      recommends = ranks;
+    }
+
+    ctx.body = { recommends };
   }
 }
