@@ -14,6 +14,7 @@ const Rank = db.define('rank', {
   star: { type: Sequelize.STRING },
   votes: { type: Sequelize.STRING },
   quote: { type: Sequelize.TEXT },
+  selected: { type: Sequelize.BOOLEAN, defaultValue: false },
 });
 
 export default Rank;

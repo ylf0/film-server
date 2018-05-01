@@ -28,6 +28,27 @@ const reviewSchema = {
 };
 
 export default class ReviewRouter {
+  @request('get', '/review/all')
+  @query({
+    page: { type: 'number', required: false, default: 1 },
+    limit: { type: 'number', required: false, default: 10 },
+    searchWord: { type: 'string', required: false }
+  })
+  @tag
+  @summary('获取所有影评')
+  static async getAll(ctx) {
+    const { page, limit, searchWord } = ctx.validatedQuery;
+
+    const { count, rows: reviews } = await Review.findAndCountAll({
+      where: searchWord ? { title: { $like: `%${searchWord}%` } } : {},
+      page,
+      limit,
+      offest: (page - 1) * limit
+    });
+
+    ctx.body = { count, reviews };
+  }
+
   @request('get', '/review/{id}')
   @query({
     page: { type: 'number', required: false, default: 1 },
@@ -37,7 +58,7 @@ export default class ReviewRouter {
   })
   @path({ id: pathParameter.id })
   @tag
-  @summary('获取影评')
+  @summary('获取处理后的影评')
   static async getReview(ctx) {
     const { id } = ctx.validatedParams;
     const { page, limit, searchWord, type } = ctx.validatedQuery;

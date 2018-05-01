@@ -69,7 +69,7 @@ export default class UserRouter {
         const wordsCount = await Words.count({ where: { userId: user.id } });
         await User.update(
           { reviewCount, wordsCount },
-          { where: { id: user.id } }
+          { where: { id: user.id }, silent: true },
         );
       } catch (err) {
         console.log(err);
