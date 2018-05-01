@@ -1,4 +1,6 @@
 import User from 'models/user';
+import Review from 'models/review';
+import Words from 'models/words';
 
 import sha1 from 'sha1';
 import multer from 'koa-multer';
@@ -59,7 +61,21 @@ export default class UserRouter {
       limit,
       offest: (page - 1) * limit
     });
-    allUser.forEach(user => { user.selected = false; });
+
+    allUser.forEach(async user => {
+      try {
+        user.selected = false;
+        const reviewCount = await Review.count({ where: { userId: user.id } });
+        const wordsCount = await Words.count({ where: { userId: user.id } });
+        await User.update(
+          { reviewCount, wordsCount },
+          { where: { id: user.id } }
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
     ctx.body = { count, allUser };
   }
 

@@ -9,6 +9,8 @@ const User = db.define('user', {
   passwordHash: { type: Sequelize.STRING },
   avatar: { type: Sequelize.STRING, defaultValue: 'static/images/avatar.jpg' },
   cover: { type: Sequelize.STRING },
+  reviewCount: { type: Sequelize.INTEGER, defaultValue: 0 },
+  wordsCount: { type: Sequelize.INTEGER, defaultValue: 0 },
   token: { type: Sequelize.STRING },
   selected: { type: Sequelize.BOOLEAN, defaultValue: false },
   favor: { type: Sequelize.STRING },
