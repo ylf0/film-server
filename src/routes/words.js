@@ -25,6 +25,27 @@ const wordsSchema = {
 };
 
 export default class WordsRouter {
+  @request('get', '/words/all')
+  @query({
+    page: { type: 'number', required: false, default: 1 },
+    limit: { type: 'number', required: false, default: 10 },
+    searchWord: { type: 'string', required: false }
+  })
+  @tag
+  @summary('获取所有台词')
+  static async getAll(ctx) {
+    const { page, limit, searchWord } = ctx.validatedQuery;
+
+    const { count, rows: words } = await Words.findAndCountAll({
+      where: searchWord ? { title: { $like: `%${searchWord}%` } } : {},
+      page,
+      limit,
+      offest: (page - 1) * limit
+    });
+
+    ctx.body = { count, words };
+  }
+
   @request('get', '/words/{id}')
   @query({
     page: { type: 'number', required: false, default: 1 },
@@ -33,7 +54,7 @@ export default class WordsRouter {
   })
   @path(pathParameter)
   @tag
-  @summary('获取台词')
+  @summary('获取处理后的台词')
   static async getWords(ctx) {
     const { id } = ctx.validatedParams;
     const { page, limit, searchWord } = ctx.validatedQuery;
