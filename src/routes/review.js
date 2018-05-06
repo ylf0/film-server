@@ -32,7 +32,8 @@ export default class ReviewRouter {
   @query({
     page: { type: 'number', required: false, default: 1 },
     limit: { type: 'number', required: false, default: 10 },
-    searchWord: { type: 'string', required: false }
+    searchWord: { type: 'string', required: false },
+    order: { type: 'string', required: false }
   })
   @tag
   @summary('获取所有影评')
@@ -54,21 +55,22 @@ export default class ReviewRouter {
     page: { type: 'number', required: false, default: 1 },
     limit: { type: 'number', required: false, default: 10 },
     searchWord: { type: 'string', required: false },
-    type: { type: 'string', required: false }
+    type: { type: 'string', required: false },
+    order: { type: 'string', required: false }
   })
   @path({ id: pathParameter.id })
   @tag
   @summary('获取处理后的影评')
   static async getReview(ctx) {
     const { id } = ctx.validatedParams;
-    const { page, limit, searchWord, type } = ctx.validatedQuery;
+    const { page, limit, searchWord, type, order } = ctx.validatedQuery;
 
     const { count, rows: reviews } = await Review.findAndCountAll({
       where: searchWord ? { title: { $like: `%${searchWord}%` } } : {},
       page,
       limit,
       offset: (page - 1) * limit,
-      order: [['createdAt', 'DESC']],
+      order: [[`${order}`, 'DESC']],
       include: [
         { model: User },
         { model: Rank, where: type ? { type: { $like: `%${type}%` } } : {} }
