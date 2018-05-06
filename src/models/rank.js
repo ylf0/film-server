@@ -4,16 +4,18 @@ import db from 'db';
 
 const Rank = db.define('rank', {
   id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-  order: { type: Sequelize.INTEGER },
   title: { type: Sequelize.STRING },
-  img_src: { type: Sequelize.STRING },
-  info: { type: Sequelize.TEXT },
+  poster: { type: Sequelize.STRING },
+  director: { type: Sequelize.STRING },
+  writer: { type: Sequelize.STRING },
+  actor: { type: Sequelize.TEXT },
   time: { type: Sequelize.STRING },
   area: { type: Sequelize.STRING },
   type: { type: Sequelize.STRING },
+  summary: { type: Sequelize.TEXT },
+  runTime: { type: Sequelize.STRING },
   star: { type: Sequelize.STRING },
   votes: { type: Sequelize.STRING },
-  quote: { type: Sequelize.TEXT },
   selected: { type: Sequelize.BOOLEAN, defaultValue: false },
 });
 

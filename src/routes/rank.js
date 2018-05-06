@@ -10,6 +10,7 @@ import {
   summary,
   tags
 } from 'koa-swagger-decorator';
+import { isArray } from 'util';
 
 const tag = tags(['Rank']);
 
@@ -42,7 +43,7 @@ export default class RankRouter {
       const { rows: ranks } = await Rank.findAndCountAll({
         where: { title: { $like: `${searchWord}%` } },
         limit,
-        order: [['order', 'ASC']]
+        order: [['star', 'DESC']]
       });
       ctx.body = { ranks };
     } else {
@@ -89,14 +90,18 @@ export default class RankRouter {
     const userdIds = new Set();
     let list = [];
     let recommends = [];
+    const relatedDirector = new Set();
+    const relatedActor = new Set();
+    const result = new Set();
+    const movieIds = user.movieIds.split(' ');
 
     if (user.favor) {
       list = user.favor.split(' ');
       for (let i = 0; i < list.length; i += 1) {
-        const rank = await Rank.findOne({
+        const rank = await Rank.findAll({
           where: { type: { $like: `%${list[i]}%` } }
         });
-        ids.add(rank.id);
+        rank.forEach(r => ids.add(r.id));
       }
       (await Review.findAll({ where: { userId: id } })).forEach(review => { userdIds.add(review.movieId); });
 
@@ -104,8 +109,41 @@ export default class RankRouter {
         if (ids.has(used)) ids.delete(used);
       });
 
+      movieIds.forEach(id => {
+        if (ids.has(Number(id))) ids.delete(Number(id));
+      });
+
+      for (let i = 0; i < movieIds.length; i += 1) {
+        const movie = await Rank.findById(Number(movieIds[i]));
+
+        const actors = (movie.actor.split(' ')).slice(1, 4);
+
+        const director = await Rank.findAll({
+          where: { director: { $like: `%${movie.director}%` } }
+        });
+
+        const randomNum = Math.floor(Math.random() * director.length);
+        // director.forEach(d => relatedDirector.add(d.id));
+        relatedDirector.add(director[randomNum].id);
+
+        for (let i = 0; i < actors.length; i += 1) {
+          const actor = await Rank.findAll({
+            where: { actor: { $like: `%${actors[i]}%` } }
+          });
+          const randomNum = Math.floor(Math.random() * actor.length);
+          // actor.forEach(a => { relatedActor.add(a.id); });
+          relatedActor.add(actor[randomNum].id);
+        }
+      }
+
+      const combine = (Array.from(relatedDirector).concat(Array.from(relatedActor)));
+
+      combine.forEach(option => {
+        if (ids.has(option)) result.add(option);
+      });
+
       recommends = await Rank.findAll({
-        where: { id: Array.from(ids) }
+        where: { id: Array.from(result) }
       });
     } else {
       const { rows: ranks } = await Rank.findAndCount({

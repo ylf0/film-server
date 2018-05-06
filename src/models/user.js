@@ -13,6 +13,7 @@ const User = db.define('user', {
   wordsCount: { type: Sequelize.INTEGER, defaultValue: 0 },
   token: { type: Sequelize.STRING },
   selected: { type: Sequelize.BOOLEAN, defaultValue: false },
+  movieIds: { type: Sequelize.STRING },
   favor: { type: Sequelize.STRING },
   createdAt: {
     type: Sequelize.DATE,

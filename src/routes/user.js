@@ -165,15 +165,27 @@ export default class UserRouter {
   @request('post', '/user/favor')
   @body({
     id: { type: 'number', required: true },
-    type: { type: 'string', required: true }
+    type: { type: 'string', required: true },
+    movieId: { type: 'number', required: true }
   })
   @tag
   @summary('收集用户喜好')
   static async getFavor(ctx) {
-    const { id, type } = ctx.validatedBody;
+    const { id, type, movieId } = ctx.validatedBody;
     const types = type.split(' ');
+    let array = [];
 
     const user = await User.findById(id);
+    if (user.movieIds) array = user.movieIds.split(' ');
+
+    function check() {
+      for (let i = 0; i < array.length; i += 1) {
+        if (`${movieId}` === array[i]) return true;
+      }
+      return false;
+    }
+
+    const isExist = check();
 
     if (!user.favor) {
       await User.update(
@@ -189,6 +201,18 @@ export default class UserRouter {
           );
         }
       });
+    }
+
+    if (!user.movieIds) {
+      await User.update(
+        { movieIds: `${movieId}` },
+        { where: { id } }
+      );
+    } else if (!isExist) {
+      await User.update(
+        { movieIds: `${user.movieIds} ${movieId}` },
+        { where: { id } }
+      );
     }
 
     ctx.body = { msg: 'success' };
