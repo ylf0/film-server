@@ -166,14 +166,24 @@ export default class UserRouter {
   @body({
     id: { type: 'number', required: true },
     type: { type: 'string', required: true },
-    movieId: { type: 'number', required: true }
+    movieId: { type: 'number', required: true },
+    isReview: { type: 'boolean', required: false, default: false },
+    reviewId: { type: 'number', required: false }
   })
   @tag
   @summary('收集用户喜好')
   static async getFavor(ctx) {
-    const { id, type, movieId } = ctx.validatedBody;
+    const { id, type, movieId, isReview, reviewId } = ctx.validatedBody;
     const types = type.split(' ');
     let array = [];
+
+    if (isReview) {
+      const review = await Review.findById(reviewId);
+      await Review.update(
+        { reviewNum: review.reviewNum + 1 },
+        { where: { id: reviewId } }
+      );
+    }
 
     const user = await User.findById(id);
     if (user.movieIds) array = user.movieIds.split(' ');
@@ -216,5 +226,31 @@ export default class UserRouter {
     }
 
     ctx.body = { msg: 'success' };
+  }
+
+  @request('get', '/user/{id}')
+  @path({ id: pathParameter.id })
+  @tag
+  @summary('获取用户详细信息')
+  static async getDetail(ctx) {
+    const { id } = ctx.validatedParams;
+    let reviewLikeNum = 0;
+    let reviewNum = 0;
+    let wordsLikeNum = 0;
+
+    const reviews = await Review.findAll({ where: { userId: id } });
+
+    reviews.forEach(review => {
+      reviewLikeNum += review.likeNum;
+      reviewNum += review.reviewNum;
+    });
+
+    const words = await Words.findAll({ where: { userId: id } });
+
+    words.forEach(word => {
+      wordsLikeNum += word.likeNum;
+    });
+
+    ctx.body = { reviewLikeNum, reviewNum, wordsLikeNum };
   }
 }
