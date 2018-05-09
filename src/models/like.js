@@ -11,6 +11,7 @@ const Like = db.define('like', {
   senderId: { type: Sequelize.INTEGER, allowNull: false },
   receiverId: { type: Sequelize.INTEGER, allowNull: false },
   reviewId: { type: Sequelize.INTEGER, allowNull: false },
+  checked: { type: Sequelize.BOOLEAN, defaultValue: false },
   createdAt: {
     type: Sequelize.DATE,
     get() {
@@ -25,8 +26,8 @@ const Like = db.define('like', {
   }
 });
 
-Like.belongsTo(User, { foreignKey: 'senderId' });
 Like.belongsTo(User, { foreignKey: 'receiverId' });
+Like.belongsTo(User, { foreignKey: 'senderId' });
 Like.belongsTo(Review, { foreignKey: 'reviewId' });
 
 export default Like;

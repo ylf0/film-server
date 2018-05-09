@@ -1,6 +1,7 @@
 import User from 'models/user';
 import Review from 'models/review';
 import Words from 'models/words';
+import Like from 'models/like';
 
 import sha1 from 'sha1';
 import multer from 'koa-multer';
@@ -151,7 +152,7 @@ export default class UserRouter {
     ctx.body = { msg: '上传成功', user: { user } };
   }
 
-  @request('delete', '/delete/{id}')
+  @request('delete', '/user/delete/{id}')
   @path({ id: pathParameter.id })
   @tag
   @summary('删除用户')
@@ -160,6 +161,21 @@ export default class UserRouter {
     await User.destroy({ where: { id } });
 
     ctx.body = { msg: '删除成功' };
+  }
+
+  @request('delete', '/user/delete/batch/{ids}')
+  @path({ ids: { type: 'string', required: true, description: '待删除的用户 ids' } })
+  @tag
+  @summary('批量删除用户')
+  static async deleteBatch(ctx) {
+    const { ids } = ctx.validatedParams;
+
+    const batch = ids.split(' ');
+    console.log(batch);
+
+    await User.destroy({ where: { id: { $in: batch } } });
+
+    ctx.body = { msg: 'success' };
   }
 
   @request('post', '/user/favor')
@@ -252,5 +268,35 @@ export default class UserRouter {
     });
 
     ctx.body = { reviewLikeNum, reviewNum, wordsLikeNum };
+  }
+
+  @request('get', '/user/notice/{id}')
+  @path({ id: pathParameter.id })
+  @tag
+  @summary('获取用户消息通知')
+  static async getNotice(ctx) {
+    const { id } = ctx.validatedParams;
+    const { count, rows: noticeLike } = await Like.findAndCountAll({
+      where: { senderId: { $not: id }, receiverId: id, checked: false },
+      include: [
+        { model: User },
+        { model: Review }
+      ]
+    });
+
+    ctx.body = { count, noticeLike };
+  }
+
+  @request('post', '/user/check')
+  @body({ id: { type: 'number', required: true, description: '通知 id' } })
+  @tag
+  @summary('查看消息通知')
+  static async check(ctx) {
+    const { id } = ctx.validatedBody;
+    const notice = await Like.findById(id);
+
+    if (!notice.checked) await Like.update({ checked: true }, { where: { id } });
+
+    ctx.body = { msg: 'success' };
   }
 }
