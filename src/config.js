@@ -16,9 +16,9 @@ const config = {
   },
   production: {
     port: 3000,
-    baseUrl: 'http://127.0.0.1:3000',
+    baseUrl: 'http://43.251.100.34:3000',
     mysql: {
-      host: 'localhost',
+      host: '127.0.0.1',
       database: 'film',
       user: 'root',
       password: 'zhinan'
