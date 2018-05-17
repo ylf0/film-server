@@ -2,7 +2,10 @@ const env = process.env.NODE_ENV;
 const common = {
   baseUrl: 'http://127.0.0.1:3000',
   mysql: {
-    host: '127.0.0.1'
+    host: '127.0.0.1',
+    database: 'film',
+    user: 'root',
+    password: 'zhinan'
   }
 };
 const config = {
