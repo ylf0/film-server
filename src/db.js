@@ -5,6 +5,9 @@ import config from 'config';
 const { host, database, user, password } = config.mysql;
 
 let mysqlUrl;
+console.log(host);
+console.log(database);
+console.log(user);
 if (password) {
   mysqlUrl = `mysql://${user}:${password}@${host}/${database}`;
 } else {
