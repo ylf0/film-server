@@ -1,5 +1,6 @@
-const env = process.env.NODE_ENV;
-console.log(env);
+// const env = process.env.NODE_ENV;
+// console.log(env);
+const env = 'develop';
 const common = {
   baseUrl: 'http://43.251.100.34:3000',
   mysql: {}
