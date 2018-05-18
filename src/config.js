@@ -1,13 +1,8 @@
 const env = process.env.NODE_ENV;
+console.log(env);
 const common = {
-  port: 3000,
   baseUrl: 'http://43.251.100.34:3000',
-  mysql: {
-    host: '127.0.0.1',
-    database: 'film',
-    user: 'root',
-    password: 'zhinan'
-  }
+  mysql: {}
 };
 const config = {
   develop: {
