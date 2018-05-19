@@ -19,7 +19,7 @@ wrapper(router);
 
 router.swagger({ title: 'Film', description: 'Film API Doc', version: '0.0.1' });
 
-router.use(auth({ excludes: ['/user/login'] }));
+router.use(auth({ excludes: ['/user/login', '/rank'] }));
 router.map(UserRouter);
 router.map(RankRouter);
 router.map(ReviewRouter);
