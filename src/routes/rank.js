@@ -94,9 +94,11 @@ export default class RankRouter {
     const relatedActor = new Set();
     const result = new Set();
     const movieIds = user.movieIds.split(' ');
+    console.log(movieIds);
 
     if (user.favor) {
       list = user.favor.split(' ');
+      console.log(list);
       for (let i = 0; i < list.length; i += 1) {
         const rank = await Rank.findAll({
           where: { type: { $like: `%${list[i]}%` } }
@@ -117,6 +119,7 @@ export default class RankRouter {
         const movie = await Rank.findById(Number(movieIds[i]));
 
         const actors = (movie.actor.split(' ')).slice(1, 4);
+        console.log(actors);
 
         const director = await Rank.findAll({
           where: { director: { $like: `%${movie.director}%` } }
